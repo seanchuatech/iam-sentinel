@@ -1,0 +1,51 @@
+# =============================================================================
+# Sentinel IAM — Git Ignore
+# =============================================================================
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Build output
+bin/
+dist/
+build/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test & Coverage
+coverage.out
+coverage.html
+*.test
+*.prof
+
+# Air (Go hot reload)
+tmp/
+
+# Logs
+*.log
+
+# Markdown (keep only README)
+*.md
+!README.md

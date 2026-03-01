@@ -1,0 +1,61 @@
+# =============================================================================
+# Sentinel IAM — Docker Compose (Local Development)
+# =============================================================================
+# Provides PostgreSQL, Redis, and DynamoDB Local for development.
+# The Go backend and React frontend run on the host for hot reload.
+#
+# Usage:
+#   docker compose up -d        # Start infrastructure
+#   docker compose down         # Stop infrastructure
+#   docker compose down -v      # Stop + delete volumes (reset data)
+
+services:
+  # --------------------------------------------------------------------------
+  # PostgreSQL 16 — Primary relational store
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentinel-postgres
+    environment:
+      POSTGRES_USER: sentinel
+      POSTGRES_PASSWORD: sentinel_dev_password
+      POSTGRES_DB: sentinel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel -d sentinel"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --------------------------------------------------------------------------
+  # Redis 7 — JWT blacklist, session cache, rate limiting
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --------------------------------------------------------------------------
+  # DynamoDB Local — Audit logs (mimics AWS DynamoDB)
+  # --------------------------------------------------------------------------
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: sentinel-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+
+volumes:
+  postgres_data:
+  redis_data:
