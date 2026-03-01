@@ -35,86 +35,98 @@ export default function SimulatorPage() {
   };
 
   return (
+  return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-        <FlaskConical size={22} color="#a855f7" />
-        <h1 style={{ fontSize: 22, fontWeight: 700 }}>Policy Simulator</h1>
+      <div className="flex items-center gap-2.5 mb-2">
+        <FlaskConical size={22} className="text-purple-500" />
+        <h1 className="text-[22px] font-bold">Policy Simulator</h1>
       </div>
-      <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 24 }}>
+      <p className="text-sm text-(--color-text-muted) mb-6">
         Test whether a user would be allowed or denied access to a specific action and resource.
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div className="grid grid-cols-2 gap-5">
         {/* Input Panel */}
-        <div style={{ padding: 24, borderRadius: 12, backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Evaluation Request</h2>
+        <div className="p-6 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+          <h2 className="text-[15px] font-semibold mb-4">Evaluation Request</h2>
 
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 6 }}>User ID</label>
-            <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
-              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none', fontFamily: 'monospace' }} />
+          <div className="mb-4">
+            <label className="block text-[13px] font-medium text-(--color-text-secondary) mb-1.5">User ID</label>
+            <input 
+              value={userId} 
+              onChange={(e) => setUserId(e.target.value)} 
+              placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none font-mono" 
+            />
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 6 }}>Action</label>
-            <input value={action} onChange={(e) => setAction(e.target.value)} placeholder="e.g. s3:GetObject"
-              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none', fontFamily: 'monospace' }} />
+          <div className="mb-4">
+            <label className="block text-[13px] font-medium text-(--color-text-secondary) mb-1.5">Action</label>
+            <input 
+              value={action} 
+              onChange={(e) => setAction(e.target.value)} 
+              placeholder="e.g. s3:GetObject"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none font-mono" 
+            />
           </div>
 
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 6 }}>Resource</label>
-            <input value={resource} onChange={(e) => setResource(e.target.value)} placeholder="e.g. arn:sentinel:s3:bucket/*"
-              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none', fontFamily: 'monospace' }} />
+          <div className="mb-5">
+            <label className="block text-[13px] font-medium text-(--color-text-secondary) mb-1.5">Resource</label>
+            <input 
+              value={resource} 
+              onChange={(e) => setResource(e.target.value)} 
+              placeholder="e.g. arn:sentinel:s3:bucket/*"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none font-mono" 
+            />
           </div>
 
-          <button onClick={handleSimulate} disabled={loading || !userId}
-            style={{
-              width: '100%', padding: '12px', borderRadius: 8, border: 'none',
-              backgroundColor: '#a855f7', color: '#fff', fontSize: 14, fontWeight: 600,
-              cursor: loading || !userId ? 'not-allowed' : 'pointer', opacity: loading || !userId ? 0.5 : 1,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}>
+          <button 
+            onClick={handleSimulate} 
+            disabled={loading || !userId}
+            className={`w-full p-3 rounded-lg border-none bg-purple-500 text-white text-sm font-semibold flex items-center justify-center gap-2 ${loading || !userId ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-purple-600 transition-colors'}`}
+          >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
             Simulate
           </button>
         </div>
 
         {/* Result Panel */}
-        <div style={{ padding: 24, borderRadius: 12, backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Evaluation Result</h2>
+        <div className="p-6 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+          <h2 className="text-[15px] font-semibold mb-4">Evaluation Result</h2>
 
           {error && (
-            <div style={{ padding: 16, borderRadius: 8, backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--color-danger)', fontSize: 13 }}>
+            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-(--color-danger) text-[13px]">
               {error}
             </div>
           )}
 
           {result && (
             <div>
-              <div style={{
-                padding: 24, borderRadius: 12, textAlign: 'center', marginBottom: 16,
-                backgroundColor: decisionColors[result.decision]?.bg || 'var(--color-bg-hover)',
-                border: `2px solid ${decisionColors[result.decision]?.color || 'var(--color-border)'}`,
-              }}>
-                <div style={{
-                  fontSize: 32, fontWeight: 800, letterSpacing: '0.05em',
-                  color: decisionColors[result.decision]?.color || 'var(--color-text-primary)',
-                }}>
+              <div 
+                className="p-6 rounded-xl text-center mb-4"
+                style={{
+                  backgroundColor: decisionColors[result.decision]?.bg || 'var(--color-bg-hover)',
+                  border: `2px solid ${decisionColors[result.decision]?.color || 'var(--color-border)'}`,
+                }}
+              >
+                <div 
+                  className="text-[32px] font-extrabold tracking-wider"
+                  style={{
+                    color: decisionColors[result.decision]?.color || 'var(--color-text-primary)',
+                  }}
+                >
                   {result.decision}
                 </div>
               </div>
-              <div style={{ padding: 16, borderRadius: 8, backgroundColor: 'var(--color-bg-secondary)' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 4, textTransform: 'uppercase' }}>Reason</div>
-                <div style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>{result.reason}</div>
+              <div className="p-4 rounded-lg bg-(--color-bg-secondary)">
+                <div className="text-xs font-semibold text-(--color-text-muted) mb-1 uppercase">Reason</div>
+                <div className="text-sm text-(--color-text-secondary)">{result.reason}</div>
               </div>
             </div>
           )}
 
           {!result && !error && (
-            <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)', fontSize: 14 }}>
+            <div className="text-center p-10 text-(--color-text-muted) text-sm">
               Enter a user ID, action, and resource, then click Simulate.
             </div>
           )}

@@ -48,40 +48,39 @@ export default function ApiKeysPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Key size={22} color="#f59e0b" />
-          <h1 style={{ fontSize: 22, fontWeight: 700 }}>API Keys</h1>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2.5">
+          <Key size={22} className="text-amber-500" />
+          <h1 className="text-[22px] font-bold">API Keys</h1>
         </div>
-        <button onClick={() => { setShowCreate(!showCreate); setNewKeySecret(null); }} style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8,
-          border: 'none', backgroundColor: 'var(--color-primary)', color: '#fff', fontSize: 13,
-          fontWeight: 600, cursor: 'pointer',
-        }}><Plus size={16} /> Generate Key</button>
+        <button 
+          onClick={() => { setShowCreate(!showCreate); setNewKeySecret(null); }} 
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border-none bg-(--color-primary) text-white text-[13px] font-semibold cursor-pointer hover:bg-(--color-primary-light) transition-colors"
+        >
+          <Plus size={16} /> Generate Key
+        </button>
       </div>
 
       {/* New key secret (shown once) */}
       {newKeySecret && (
-        <div style={{
-          padding: 20, marginBottom: 20, borderRadius: 12,
-          backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)',
-        }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-warning)', marginBottom: 12 }}>
+        <div className="p-5 mb-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
+          <div className="text-[13px] font-semibold text-(--color-warning) mb-3">
             ⚠️ Save your secret key now — you won't be able to see it again!
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {[
               { label: 'Key ID', value: newKeySecret.keyId, field: 'keyId' },
               { label: 'Secret', value: newKeySecret.secret, field: 'secret' },
             ].map(({ label, value, field }) => (
-              <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', minWidth: 50 }}>{label}:</span>
-                <code style={{ flex: 1, fontSize: 12, padding: '6px 10px', borderRadius: 6, backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontFamily: 'monospace' }}>
+              <div key={field} className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-(--color-text-muted) min-w-[50px]">{label}:</span>
+                <code className="flex-1 text-xs px-2.5 py-1.5 rounded-md bg-(--color-bg-secondary) text-(--color-text-primary) font-mono">
                   {value}
                 </code>
-                <button onClick={() => handleCopy(value, field)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', color: copiedField === field ? 'var(--color-success)' : 'var(--color-text-muted)', padding: 4,
-                }}>
+                <button 
+                  onClick={() => handleCopy(value, field)} 
+                  className={`bg-transparent border-none cursor-pointer p-1 transition-colors ${copiedField === field ? 'text-(--color-success)' : 'text-(--color-text-muted) hover:text-(--color-primary)'}`}
+                >
                   {copiedField === field ? <CheckCheck size={14} /> : <Copy size={14} />}
                 </button>
               </div>
@@ -91,54 +90,80 @@ export default function ApiKeysPage() {
       )}
 
       {showCreate && (
-        <div style={{ padding: 20, marginBottom: 20, borderRadius: 12, backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <input placeholder="Key name (e.g. CI/CD Pipeline)" value={name} onChange={(e) => setName(e.target.value)}
-              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none' }} />
-            <button onClick={handleCreate} disabled={creating || !name} style={{
-              padding: '8px 20px', borderRadius: 8, border: 'none', backgroundColor: 'var(--color-success)',
-              color: '#fff', fontSize: 13, fontWeight: 600, cursor: creating || !name ? 'not-allowed' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6, opacity: creating || !name ? 0.5 : 1,
-            }}>{creating && <Loader2 size={14} className="animate-spin" />} Generate</button>
+        <div className="p-5 mb-5 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+          <div className="flex gap-3">
+            <input 
+              placeholder="Key name (e.g. CI/CD Pipeline)" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none transition-colors focus:border-(--color-primary-light)"
+            />
+            <button 
+              onClick={handleCreate} 
+              disabled={creating || !name} 
+              className="px-5 py-2 rounded-lg border-none bg-(--color-success) text-white text-[13px] font-semibold flex items-center gap-1.5 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {creating && <Loader2 size={14} className="animate-spin" />} Generate
+            </button>
           </div>
         </div>
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)' }}>
-          <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto' }} />
+        <div className="text-center p-10 text-(--color-text-muted)">
+          <Loader2 size={24} className="animate-spin mx-auto" />
         </div>
       ) : (
-        <div style={{ borderRadius: 12, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-card)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-              {['Name', 'Key ID', 'Status', 'Last Used', 'Created', ''].map((h) => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
-              ))}
-            </tr></thead>
+        <div className="rounded-xl border border-(--color-border) bg-(--color-bg-card) overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-(--color-border)">
+                {['Name', 'Key ID', 'Status', 'Last Used', 'Created', ''].map((h) => (
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-(--color-text-muted) uppercase tracking-wider">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
             <tbody>
               {keys.map((k) => (
-                <tr key={k.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 500 }}>{k.name}</td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <code style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, backgroundColor: 'var(--color-bg-hover)', color: 'var(--color-text-secondary)' }}>{k.key_id}</code>
+                <tr key={k.id} className="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-bg-hover) transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium">{k.name}</td>
+                  <td className="px-4 py-3">
+                    <code className="text-[11px] px-1.5 py-0.5 rounded bg-(--color-bg-hover) text-(--color-text-secondary)">
+                      {k.key_id}
+                    </code>
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <span style={{
-                      display: 'inline-block', padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-                      backgroundColor: k.status === 'active' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                      color: k.status === 'active' ? 'var(--color-success)' : 'var(--color-danger)',
-                    }}>{k.status}</span>
+                  <td className="px-4 py-3">
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase ${
+                      k.status === 'active' ? 'bg-green-500/15 text-(--color-success)' : 'bg-red-500/15 text-(--color-danger)'
+                    }`}>
+                      {k.status}
+                    </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-muted)' }}>{k.last_used ? new Date(k.last_used).toLocaleString() : 'Never'}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-muted)' }}>{new Date(k.created_at).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button onClick={() => handleDelete(k.id)} title="Revoke" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 4 }}><Trash2 size={15} /></button>
+                  <td className="px-4 py-3 text-[13px] text-(--color-text-muted)">
+                    {k.last_used ? new Date(k.last_used).toLocaleString() : 'Never'}
+                  </td>
+                  <td className="px-4 py-3 text-[13px] text-(--color-text-muted)">
+                    {new Date(k.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button 
+                      onClick={() => handleDelete(k.id)} 
+                      title="Revoke" 
+                      className="bg-transparent border-none cursor-pointer text-(--color-text-muted) p-1 transition-colors hover:text-(--color-danger)"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </td>
                 </tr>
               ))}
               {keys.length === 0 && (
-                <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 14 }}>No API keys. Generate one to enable programmatic access.</td></tr>
+                <tr>
+                  <td colSpan={6} className="p-10 text-center text-(--color-text-muted) text-sm">
+                    No API keys. Generate one to enable programmatic access.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

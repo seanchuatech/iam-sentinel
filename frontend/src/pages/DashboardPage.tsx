@@ -10,43 +10,23 @@ interface StatCardProps {
   label: string;
   value: number | string;
   icon: React.ReactNode;
-  color: string;
+  colorClass: string;
+  bgClass: string;
 }
 
-function StatCard({ label, value, icon, color }: StatCardProps) {
+function StatCard({ label, value, icon, colorClass, bgClass }: StatCardProps) {
   return (
     <div
-      style={{
-        padding: 20,
-        borderRadius: 12,
-        backgroundColor: 'var(--color-bg-card)',
-        border: '1px solid var(--color-border)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        transition: 'border-color 0.2s',
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+      className={`p-5 rounded-xl bg-(--color-bg-card) border border-(--color-border) flex items-center gap-4 transition-colors duration-200 hover:border-${colorClass}`}
     >
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
-          backgroundColor: `${color}15`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className={`w-11 h-11 rounded-lg flex items-center justify-center ${bgClass}`}>
         {icon}
       </div>
       <div>
-        <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+        <div className="text-2xl font-bold text-(--color-text-primary)">
           {value}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{label}</div>
+        <div className="text-[13px] text-(--color-text-muted)">{label}</div>
       </div>
     </div>
   );
@@ -83,47 +63,33 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <Shield size={22} color="var(--color-primary-light)" />
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+      <div className="mb-7">
+        <div className="flex items-center gap-2.5 mb-1">
+          <Shield size={22} className="text-(--color-primary-light)" />
+          <h1 className="text-[22px] font-bold text-(--color-text-primary)">
             Dashboard
           </h1>
         </div>
-        <p style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+        <p className="text-sm text-(--color-text-muted)">
           Sentinel IAM — system overview
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 16,
-          marginBottom: 32,
-        }}
-      >
-        <StatCard label="Users" value={stats.users} icon={<Users size={22} color="#6366f1" />} color="#6366f1" />
-        <StatCard label="Groups" value={stats.groups} icon={<FolderTree size={22} color="#22c55e" />} color="#22c55e" />
-        <StatCard label="Roles" value={stats.roles} icon={<UserCog size={22} color="#f59e0b" />} color="#f59e0b" />
-        <StatCard label="Policies" value={stats.policies} icon={<FileText size={22} color="#3b82f6" />} color="#3b82f6" />
-        <StatCard label="Audit Events" value={stats.auditLogs} icon={<ScrollText size={22} color="#ec4899" />} color="#ec4899" />
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
+        <StatCard label="Users" value={stats.users} icon={<Users size={22} className="text-indigo-500" />} colorClass="indigo-500" bgClass="bg-indigo-500/15" />
+        <StatCard label="Groups" value={stats.groups} icon={<FolderTree size={22} className="text-green-500" />} colorClass="green-500" bgClass="bg-green-500/15" />
+        <StatCard label="Roles" value={stats.roles} icon={<UserCog size={22} className="text-amber-500" />} colorClass="amber-500" bgClass="bg-amber-500/15" />
+        <StatCard label="Policies" value={stats.policies} icon={<FileText size={22} className="text-blue-500" />} colorClass="blue-500" bgClass="bg-blue-500/15" />
+        <StatCard label="Audit Events" value={stats.auditLogs} icon={<ScrollText size={22} className="text-pink-500" />} colorClass="pink-500" bgClass="bg-pink-500/15" />
       </div>
 
       {/* Quick start info */}
-      <div
-        style={{
-          padding: 20,
-          borderRadius: 12,
-          backgroundColor: 'var(--color-bg-card)',
-          border: '1px solid var(--color-border)',
-        }}
-      >
-        <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: 'var(--color-text-primary)' }}>
+      <div className="p-5 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+        <h2 className="text-base font-semibold mb-3 text-(--color-text-primary)">
           Quick Start
         </h2>
-        <div style={{ fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.8 }}>
+        <div className="text-sm text-(--color-text-secondary) leading-[1.8]">
           <p><strong>1.</strong> Create <strong>Users</strong> to represent principals in the system.</p>
           <p><strong>2.</strong> Define <strong>Policies</strong> with Allow/Deny statements for actions and resources.</p>
           <p><strong>3.</strong> Organize users into <strong>Groups</strong> and assign <strong>Roles</strong>.</p>

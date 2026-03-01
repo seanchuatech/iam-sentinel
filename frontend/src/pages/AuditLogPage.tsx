@@ -31,54 +31,63 @@ export default function AuditLogPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-        <ScrollText size={22} color="#ec4899" />
-        <h1 style={{ fontSize: 22, fontWeight: 700 }}>Audit Logs</h1>
-        <span style={{ fontSize: 13, color: 'var(--color-text-muted)', marginLeft: 4 }}>({total} events)</span>
+      <div className="flex items-center gap-2.5 mb-2">
+        <ScrollText size={22} className="text-pink-500" />
+        <h1 className="text-[22px] font-bold">Audit Logs</h1>
+        <span className="text-[13px] text-(--color-text-muted) ml-1">({total} events)</span>
       </div>
-      <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 24 }}>
+      <p className="text-sm text-(--color-text-muted) mb-6">
         Immutable record of all access decisions and system actions.
       </p>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)' }}>
-          <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto' }} />
+        <div className="text-center p-10 text-(--color-text-muted)">
+          <Loader2 size={24} className="animate-spin mx-auto" />
         </div>
       ) : (
         <>
-          <div style={{ borderRadius: 12, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-card)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-                {['Timestamp', 'Actor', 'Action', 'Resource', 'Result', 'IP'].map((h) => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
-                ))}
-              </tr></thead>
+          <div className="rounded-xl border border-(--color-border) bg-(--color-bg-card) overflow-hidden">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-(--color-border)">
+                  {['Timestamp', 'Actor', 'Action', 'Resource', 'Result', 'IP'].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-(--color-text-muted) uppercase tracking-wider">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                    <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
+                  <tr key={log.id} className="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-bg-hover) transition-colors">
+                    <td className="px-4 py-3 text-xs text-(--color-text-muted) font-mono whitespace-nowrap">
                       {new Date(log.timestamp).toLocaleString()}
                     </td>
-                    <td style={{ padding: '12px 16px', fontSize: 13 }}>
-                      <code style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, backgroundColor: 'var(--color-bg-hover)', color: 'var(--color-text-secondary)' }}>
+                    <td className="px-4 py-3 text-[13px]">
+                      <code className="text-[11px] px-1.5 py-0.5 rounded bg-(--color-bg-hover) text-(--color-text-secondary)">
                         {log.actor_id.slice(0, 8)}...
                       </code>
                     </td>
-                    <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500 }}>{log.action}</td>
-                    <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--color-text-secondary)', fontFamily: 'monospace' }}>{log.resource}</td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{
-                        display: 'inline-block', padding: '3px 10px', borderRadius: 20, fontSize: 11,
-                        fontWeight: 600, textTransform: 'uppercase',
-                        backgroundColor: `${resultColors[log.result] || 'var(--color-text-muted)'}20`,
-                        color: resultColors[log.result] || 'var(--color-text-muted)',
-                      }}>{log.result}</span>
+                    <td className="px-4 py-3 text-[13px] font-medium">{log.action}</td>
+                    <td className="px-4 py-3 text-xs text-(--color-text-secondary) font-mono break-all">{log.resource}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase ${
+                        log.result === 'ALLOW' ? 'bg-green-500/15 text-(--color-success)' :
+                        log.result === 'DENY' ? 'bg-red-500/15 text-(--color-danger)' :
+                        'bg-yellow-500/15 text-(--color-warning)'
+                      }`}>
+                        {log.result}
+                      </span>
                     </td>
-                    <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>{log.ip_address || '—'}</td>
+                    <td className="px-4 py-3 text-xs text-(--color-text-muted) font-mono">{log.ip_address || '—'}</td>
                   </tr>
                 ))}
                 {logs.length === 0 && (
-                  <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 14 }}>No audit events recorded yet.</td></tr>
+                  <tr>
+                    <td colSpan={6} className="p-10 text-center text-(--color-text-muted) text-sm">
+                      No audit events recorded yet.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
@@ -86,23 +95,24 @@ export default function AuditLogPage() {
 
           {/* Pagination */}
           {total > limit && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
-              <button disabled={offset === 0} onClick={() => fetchLogs(Math.max(0, offset - limit))}
-                style={{
-                  padding: '8px 16px', borderRadius: 8, border: '1px solid var(--color-border)',
-                  backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)',
-                  fontSize: 13, cursor: offset === 0 ? 'not-allowed' : 'pointer', opacity: offset === 0 ? 0.5 : 1,
-                }}>Previous</button>
-              <span style={{ padding: '8px 12px', fontSize: 13, color: 'var(--color-text-muted)' }}>
+            <div className="flex justify-center items-center gap-2 mt-4">
+              <button 
+                disabled={offset === 0} 
+                onClick={() => fetchLogs(Math.max(0, offset - limit))}
+                className="px-4 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-card) text-(--color-text-secondary) text-[13px] transition-all hover:bg-(--color-bg-hover) disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="px-3 py-2 text-[13px] text-(--color-text-muted)">
                 {offset + 1}–{Math.min(offset + limit, total)} of {total}
               </span>
-              <button disabled={offset + limit >= total} onClick={() => fetchLogs(offset + limit)}
-                style={{
-                  padding: '8px 16px', borderRadius: 8, border: '1px solid var(--color-border)',
-                  backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)',
-                  fontSize: 13, cursor: offset + limit >= total ? 'not-allowed' : 'pointer',
-                  opacity: offset + limit >= total ? 0.5 : 1,
-                }}>Next</button>
+              <button 
+                disabled={offset + limit >= total} 
+                onClick={() => fetchLogs(offset + limit)}
+                className="px-4 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-card) text-(--color-text-secondary) text-[13px] transition-all hover:bg-(--color-bg-hover) disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
           )}
         </>

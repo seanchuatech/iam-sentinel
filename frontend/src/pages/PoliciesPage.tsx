@@ -58,96 +58,106 @@ export default function PoliciesPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <FileText size={22} color="#3b82f6" />
-          <h1 style={{ fontSize: 22, fontWeight: 700 }}>Policies</h1>
-          <span style={{ fontSize: 13, color: 'var(--color-text-muted)', marginLeft: 4 }}>({total})</span>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2.5">
+          <FileText size={22} className="text-blue-500" />
+          <h1 className="text-[22px] font-bold">Policies</h1>
+          <span className="text-[13px] text-(--color-text-muted) ml-1">({total})</span>
         </div>
-        <button onClick={() => setShowCreate(!showCreate)} style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8,
-          border: 'none', backgroundColor: 'var(--color-primary)', color: '#fff', fontSize: 13,
-          fontWeight: 600, cursor: 'pointer',
-        }}><Plus size={16} /> New Policy</button>
+        <button 
+          onClick={() => setShowCreate(!showCreate)} 
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border-none bg-(--color-primary) text-white text-[13px] font-semibold cursor-pointer hover:bg-(--color-primary-light) transition-colors"
+        >
+          <Plus size={16} /> New Policy
+        </button>
       </div>
 
       {showCreate && (
-        <div style={{ padding: 20, marginBottom: 20, borderRadius: 12, backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-            <input placeholder="Policy name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-              style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none' }} />
-            <input placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
-              style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none' }} />
+        <div className="p-5 mb-5 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <input 
+              placeholder="Policy name" 
+              value={form.name} 
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="px-3 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none focus:border-(--color-primary-light) transition-colors"
+            />
+            <input 
+              placeholder="Description" 
+              value={form.description} 
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className="px-3 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none focus:border-(--color-primary-light) transition-colors"
+            />
           </div>
           <textarea
             value={form.document}
             onChange={(e) => setForm({ ...form, document: e.target.value })}
             rows={10}
-            style={{
-              width: '100%', padding: '12px', borderRadius: 8, border: '1px solid var(--color-border)',
-              backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)',
-              fontSize: 12, fontFamily: 'monospace', outline: 'none', resize: 'vertical', marginBottom: 12,
-            }}
+            className="w-full p-3 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-xs font-mono outline-none resize-y mb-3 transition-colors focus:border-(--color-primary-light)"
           />
-          {createError && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginBottom: 10 }}>{createError}</div>}
-          <button onClick={handleCreate} disabled={creating} style={{
-            padding: '8px 20px', borderRadius: 8, border: 'none', backgroundColor: 'var(--color-success)',
-            color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-          }}>{creating && <Loader2 size={14} className="animate-spin" />} Create Policy</button>
+          {createError && <div className="text-(--color-danger) text-[13px] mb-2.5">{createError}</div>}
+          <button 
+            onClick={handleCreate} 
+            disabled={creating} 
+            className="px-5 py-2 rounded-lg border-none bg-(--color-success) text-white text-[13px] font-semibold cursor-pointer flex items-center gap-1.5 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {creating && <Loader2 size={14} className="animate-spin" />} Create Policy
+          </button>
         </div>
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)' }}>
-          <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto' }} />
+        <div className="text-center p-10 text-(--color-text-muted)">
+          <Loader2 size={24} className="animate-spin mx-auto" />
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {policies.map((p) => (
-            <div key={p.id} style={{ borderRadius: 12, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-card)', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
-                onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <FileText size={16} color="#3b82f6" />
-                  <span style={{ fontSize: 14, fontWeight: 600 }}>{p.name}</span>
-                  <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, backgroundColor: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}>v{p.version}</span>
-                  <span style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{p.description}</span>
+            <div key={p.id} className="rounded-xl border border-(--color-border) bg-(--color-bg-card) overflow-hidden">
+              <div 
+                className="flex items-center justify-between px-4 py-3.5 cursor-pointer hover:bg-(--color-bg-hover) transition-colors"
+                onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
+              >
+                <div className="flex items-center gap-3">
+                  <FileText size={16} className="text-blue-500" />
+                  <span className="text-sm font-semibold">{p.name}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 font-medium">v{p.version}</span>
+                  <span className="text-[13px] text-(--color-text-muted)">{p.description}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-(--color-text-muted)">
                     {p.document.statement.length} statement{p.document.statement.length !== 1 ? 's' : ''}
                   </span>
-                  <button onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} title="Delete"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 4 }}>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} 
+                    title="Delete"
+                    className="bg-transparent border-none cursor-pointer text-(--color-text-muted) p-1 hover:text-(--color-danger) transition-colors"
+                  >
                     <Trash2 size={14} />
                   </button>
-                  {expandedId === p.id ? <ChevronUp size={16} color="var(--color-text-muted)" /> : <ChevronDown size={16} color="var(--color-text-muted)" />}
+                  {expandedId === p.id ? <ChevronUp size={16} className="text-(--color-text-muted)" /> : <ChevronDown size={16} className="text-(--color-text-muted)" />}
                 </div>
               </div>
               {expandedId === p.id && (
-                <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--color-border)' }}>
-                  <div style={{ marginTop: 12 }}>
+                <div className="px-4 pb-4 border-t border-(--color-border)">
+                  <div className="mt-3">
                     {p.document.statement.map((stmt, i) => (
-                      <div key={i} style={{
-                        padding: 12, marginBottom: 8, borderRadius: 8,
-                        backgroundColor: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                          <Eye size={14} color="var(--color-text-muted)" />
-                          <span style={{
-                            fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4, textTransform: 'uppercase',
-                            backgroundColor: stmt.effect === 'Allow' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                            color: stmt.effect === 'Allow' ? 'var(--color-success)' : 'var(--color-danger)',
-                          }}>{stmt.effect}</span>
+                      <div key={i} className="p-3 mb-2 rounded-lg bg-(--color-bg-secondary) border border-(--color-border) last:mb-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Eye size={14} className="text-(--color-text-muted)" />
+                          <span className={`text-[11px] font-bold px-2 py-0.5 rounded uppercase ${
+                            stmt.effect === 'Allow' ? 'bg-green-500/15 text-(--color-success)' : 'bg-red-500/15 text-(--color-danger)'
+                          }`}>
+                            {stmt.effect}
+                          </span>
                         </div>
-                        <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 4 }}>
-                          <strong>Actions:</strong> {stmt.action.map((a) =>
-                            <code key={a} style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 3, backgroundColor: 'var(--color-bg-hover)', fontSize: 11 }}>{a}</code>
+                        <div className="text-xs text-(--color-text-secondary) mb-1">
+                          <strong className="font-semibold text-(--color-text-primary)">Actions:</strong> {stmt.action.map((a) =>
+                            <code key={a} className="ml-1 px-1.5 py-px rounded bg-(--color-bg-hover) text-[11px]">{a}</code>
                           )}
                         </div>
-                        <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
-                          <strong>Resources:</strong> {stmt.resource.map((r) =>
-                            <code key={r} style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 3, backgroundColor: 'var(--color-bg-hover)', fontSize: 11 }}>{r}</code>
+                        <div className="text-xs text-(--color-text-secondary)">
+                          <strong className="font-semibold text-(--color-text-primary)">Resources:</strong> {stmt.resource.map((r) =>
+                            <code key={r} className="ml-1 px-1.5 py-px rounded bg-(--color-bg-hover) text-[11px]">{r}</code>
                           )}
                         </div>
                       </div>
@@ -158,8 +168,7 @@ export default function PoliciesPage() {
             </div>
           ))}
           {policies.length === 0 && (
-            <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)', fontSize: 14,
-              borderRadius: 12, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+            <div className="text-center p-10 text-(--color-text-muted) text-sm rounded-xl border border-(--color-border) bg-(--color-bg-card)">
               No policies yet. Create one with a JSON policy document.
             </div>
           )}

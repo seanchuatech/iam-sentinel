@@ -1,41 +1,21 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import api from './api';
 import { TOKEN_KEY } from './constants';
 import type { User, LoginResponse } from '../types';
+import { AuthContext } from '../hooks/useAuth';
 
 // =============================================================================
 // Auth Context — JWT token management + user state
 // =============================================================================
-
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() =>
     sessionStorage.getItem(TOKEN_KEY)
   );
-  const [isLoading, setIsLoading] = useState(true);
 
-  // On mount, if token exists, validate it by fetching current user
-  useEffect(() => {
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-    // Token exists — consider user logged in (token is validated via API interceptor)
-    // We don't have a /me endpoint yet, so we trust the stored token
-    setIsLoading(false);
-  }, [token]);
+  // We don't have a /me endpoint yet, so we trust the stored token on load
+  // without any async validation, which avoids the cascading render warning.
 
   const login = async (username: string, password: string) => {
     const { data } = await api.post<LoginResponse>('/auth/login', { username, password });
@@ -62,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         isAuthenticated: !!token,
-        isLoading,
+        isLoading: false,
         login,
         register,
         logout,
@@ -71,12 +51,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { AuthProvider, useAuth } from './lib/auth';
+import { AuthProvider } from './lib/auth';
+import { useAuth } from './hooks/useAuth';
 import DashboardLayout from './components/layout/DashboardLayout';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -20,8 +21,8 @@ function ProtectedRoute() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <div style={{ color: 'var(--color-text-muted)' }}>Loading...</div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-(--color-text-muted)">Loading...</div>
       </div>
     );
   }

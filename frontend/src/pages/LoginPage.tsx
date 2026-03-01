@@ -38,59 +38,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-tertiary) 100%)',
-      }}
-    >
-      <div
-        style={{
-          width: 400,
-          padding: 32,
-          borderRadius: 16,
-          backgroundColor: 'var(--color-bg-card)',
-          border: '1px solid var(--color-border)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-        }}
-      >
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-(--color-bg-primary) to-(--color-bg-tertiary)">
+      <div className="w-[400px] p-8 rounded-2xl bg-(--color-bg-card) border border-(--color-border) shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
-            <Shield size={28} color="var(--color-primary-light)" />
-            <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+        <div className="text-center mb-7">
+          <div className="flex items-center justify-center gap-2.5 mb-2">
+            <Shield size={28} className="text-(--color-primary-light)" />
+            <span className="text-2xl font-bold text-(--color-text-primary)">
               Sentinel
             </span>
           </div>
-          <p style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+          <p className="text-sm text-(--color-text-muted)">
             Identity & Access Management
           </p>
         </div>
 
         {/* Error */}
         {error && (
-          <div
-            style={{
-              padding: '10px 14px',
-              marginBottom: 16,
-              borderRadius: 8,
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: 'var(--color-danger)',
-              fontSize: 13,
-            }}
-          >
+          <div className="px-3.5 py-2.5 mb-4 rounded-lg bg-red-500/10 border border-red-500/30 text-(--color-danger) text-[13px]">
             {error}
           </div>
         )}
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+          <div className="mb-4">
+            <label className="block text-[13px] font-medium text-(--color-text-secondary) mb-1.5">
               Username
             </label>
             <input
@@ -98,24 +71,14 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                borderRadius: 8,
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)',
-                color: 'var(--color-text-primary)',
-                fontSize: 14,
-                outline: 'none',
-                transition: 'border-color 0.15s',
-              }}
+              className="w-full px-3.5 py-2.5 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-sm outline-none transition-colors duration-150 focus:border-(--color-primary-light)"
               placeholder="admin"
             />
           </div>
 
           {isRegister && (
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+            <div className="mb-4">
+              <label className="block text-[13px] font-medium text-(--color-text-secondary) mb-1.5">
                 Email
               </label>
               <input
@@ -123,23 +86,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: 8,
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  color: 'var(--color-text-primary)',
-                  fontSize: 14,
-                  outline: 'none',
-                }}
+                className="w-full px-3.5 py-2.5 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-sm outline-none transition-colors duration-150 focus:border-(--color-primary-light)"
                 placeholder="admin@sentinel.io"
               />
             </div>
           )}
 
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+          <div className="mb-6">
+            <label className="block text-[13px] font-medium text-(--color-text-secondary) mb-1.5">
               Password
             </label>
             <input
@@ -147,16 +101,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                borderRadius: 8,
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)',
-                color: 'var(--color-text-primary)',
-                fontSize: 14,
-                outline: 'none',
-              }}
+              className="w-full px-3.5 py-2.5 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-sm outline-none transition-colors duration-150 focus:border-(--color-primary-light)"
               placeholder="••••••••"
             />
           </div>
@@ -164,23 +109,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: 8,
-              border: 'none',
-              backgroundColor: 'var(--color-primary)',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              transition: 'all 0.15s',
-            }}
+            className={`w-full py-3 px-4 rounded-lg border-none bg-(--color-primary) text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 hover:bg-(--color-primary-light) ${
+              loading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+            }`}
           >
             {loading && <Loader2 size={16} className="animate-spin" />}
             {isRegister ? 'Create Account' : 'Sign In'}
@@ -188,16 +119,10 @@ export default function LoginPage() {
         </form>
 
         {/* Toggle */}
-        <div style={{ textAlign: 'center', marginTop: 20 }}>
+        <div className="text-center mt-5">
           <button
             onClick={() => { setIsRegister(!isRegister); setError(''); }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-primary-light)',
-              fontSize: 13,
-              cursor: 'pointer',
-            }}
+            className="bg-transparent border-none text-(--color-primary-light) text-[13px] cursor-pointer hover:underline"
           >
             {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
           </button>

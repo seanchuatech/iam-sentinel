@@ -41,60 +41,86 @@ export default function RolesPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <UserCog size={22} color="#f59e0b" />
-          <h1 style={{ fontSize: 22, fontWeight: 700 }}>Roles</h1>
-          <span style={{ fontSize: 13, color: 'var(--color-text-muted)', marginLeft: 4 }}>({total})</span>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2.5">
+          <UserCog size={22} className="text-amber-500" />
+          <h1 className="text-[22px] font-bold">Roles</h1>
+          <span className="text-[13px] text-(--color-text-muted) ml-1">({total})</span>
         </div>
-        <button onClick={() => setShowCreate(!showCreate)} style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8,
-          border: 'none', backgroundColor: 'var(--color-primary)', color: '#fff', fontSize: 13,
-          fontWeight: 600, cursor: 'pointer',
-        }}><Plus size={16} /> New Role</button>
+        <button 
+          onClick={() => setShowCreate(!showCreate)} 
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border-none bg-(--color-primary) text-white text-[13px] font-semibold cursor-pointer hover:bg-(--color-primary-light) transition-colors"
+        >
+          <Plus size={16} /> New Role
+        </button>
       </div>
 
       {showCreate && (
-        <div style={{ padding: 20, marginBottom: 20, borderRadius: 12, backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-            <input placeholder="Role name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-              style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none' }} />
-            <input placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
-              style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)', fontSize: 13, outline: 'none' }} />
+        <div className="p-5 mb-5 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <input 
+              placeholder="Role name" 
+              value={form.name} 
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="px-3 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none focus:border-(--color-primary-light) transition-colors"
+            />
+            <input 
+              placeholder="Description" 
+              value={form.description} 
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className="px-3 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none focus:border-(--color-primary-light) transition-colors"
+            />
           </div>
-          <button onClick={handleCreate} disabled={creating} style={{
-            padding: '8px 20px', borderRadius: 8, border: 'none', backgroundColor: 'var(--color-success)',
-            color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-          }}>{creating && <Loader2 size={14} className="animate-spin" />} Create</button>
+          <button 
+            onClick={handleCreate} 
+            disabled={creating} 
+            className="px-5 py-2 rounded-lg border-none bg-(--color-success) text-white text-[13px] font-semibold cursor-pointer flex items-center gap-1.5 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {creating && <Loader2 size={14} className="animate-spin" />} Create
+          </button>
         </div>
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)' }}>
-          <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto' }} />
+        <div className="text-center p-10 text-(--color-text-muted)">
+          <Loader2 size={24} className="animate-spin mx-auto" />
         </div>
       ) : (
-        <div style={{ borderRadius: 12, border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-card)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-              {['Name', 'Description', 'Session Duration', 'Created', ''].map((h) => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
-              ))}
-            </tr></thead>
+        <div className="rounded-xl border border-(--color-border) bg-(--color-bg-card) overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-(--color-border)">
+                {['Name', 'Description', 'Session Duration', 'Created', ''].map((h) => (
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-(--color-text-muted) uppercase tracking-wider">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
             <tbody>
               {roles.map((r) => (
-                <tr key={r.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 500 }}>{r.name}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 14, color: 'var(--color-text-secondary)' }}>{r.description || '—'}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-muted)' }}>{Math.floor(r.max_session_duration / 3600)}h</td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-muted)' }}>{new Date(r.created_at).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button onClick={() => handleDelete(r.id)} title="Delete" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 4 }}><Trash2 size={15} /></button>
+                <tr key={r.id} className="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-bg-hover) transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium">{r.name}</td>
+                  <td className="px-4 py-3 text-sm text-(--color-text-secondary)">{r.description || '—'}</td>
+                  <td className="px-4 py-3 text-[13px] text-(--color-text-muted)">{Math.floor(r.max_session_duration / 3600)}h</td>
+                  <td className="px-4 py-3 text-[13px] text-(--color-text-muted)">{new Date(r.created_at).toLocaleDateString()}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button 
+                      onClick={() => handleDelete(r.id)} 
+                      title="Delete" 
+                      className="bg-transparent border-none cursor-pointer text-(--color-text-muted) p-1 hover:text-(--color-danger) transition-colors"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </td>
                 </tr>
               ))}
               {roles.length === 0 && (
-                <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 14 }}>No roles yet.</td></tr>
+                <tr>
+                  <td colSpan={5} className="p-10 text-center text-(--color-text-muted) text-sm">
+                    No roles yet.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

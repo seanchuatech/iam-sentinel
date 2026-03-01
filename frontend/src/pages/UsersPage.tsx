@@ -46,19 +46,15 @@ export default function UsersPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Users size={22} color="var(--color-primary-light)" />
-          <h1 style={{ fontSize: 22, fontWeight: 700 }}>Users</h1>
-          <span style={{ fontSize: 13, color: 'var(--color-text-muted)', marginLeft: 4 }}>({total})</span>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2.5">
+          <Users size={22} className="text-(--color-primary-light)" />
+          <h1 className="text-[22px] font-bold">Users</h1>
+          <span className="text-[13px] text-(--color-text-muted) ml-1">({total})</span>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px',
-            borderRadius: 8, border: 'none', backgroundColor: 'var(--color-primary)',
-            color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-          }}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border-none bg-(--color-primary) text-white text-[13px] font-semibold cursor-pointer hover:bg-(--color-primary-light) transition-colors"
         >
           <Plus size={16} /> New User
         </button>
@@ -66,11 +62,8 @@ export default function UsersPage() {
 
       {/* Create Form */}
       {showCreate && (
-        <div style={{
-          padding: 20, marginBottom: 20, borderRadius: 12,
-          backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)',
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
+        <div className="p-5 mb-5 rounded-xl bg-(--color-bg-card) border border-(--color-border)">
+          <div className="grid grid-cols-3 gap-3 mb-3">
             {(['username', 'email', 'password'] as const).map((field) => (
               <input
                 key={field}
@@ -78,19 +71,15 @@ export default function UsersPage() {
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                 value={form[field]}
                 onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                style={{
-                  padding: '8px 12px', borderRadius: 8, border: '1px solid var(--color-border)',
-                  backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)',
-                  fontSize: 13, outline: 'none',
-                }}
+                className="px-3 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-secondary) text-(--color-text-primary) text-[13px] outline-none focus:border-(--color-primary-light) transition-colors"
               />
             ))}
           </div>
-          <button onClick={handleCreate} disabled={creating} style={{
-            padding: '8px 20px', borderRadius: 8, border: 'none',
-            backgroundColor: 'var(--color-success)', color: '#fff',
-            fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-          }}>
+          <button 
+            onClick={handleCreate} 
+            disabled={creating} 
+            className="px-5 py-2 rounded-lg border-none bg-(--color-success) text-white text-[13px] font-semibold cursor-pointer flex items-center gap-1.5 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {creating && <Loader2 size={14} className="animate-spin" />} Create
           </button>
         </div>
@@ -98,58 +87,57 @@ export default function UsersPage() {
 
       {/* Table */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-text-muted)' }}>
-          <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto' }} />
+        <div className="text-center p-10 text-(--color-text-muted)">
+          <Loader2 size={24} className="animate-spin mx-auto" />
         </div>
       ) : (
-        <div style={{
-          borderRadius: 12, border: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-bg-card)', overflow: 'hidden',
-        }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="rounded-xl border border-(--color-border) bg-(--color-bg-card) overflow-hidden">
+          <table className="w-full border-collapse border-none">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <tr className="border-b border-(--color-border)">
                 {['Username', 'Email', 'Status', 'Created', ''].map((h) => (
-                  <th key={h} style={{
-                    padding: '12px 16px', textAlign: 'left', fontSize: 12,
-                    fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                  }}>{h}</th>
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-(--color-text-muted) uppercase tracking-wider">
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 500 }}>{user.username}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 14, color: 'var(--color-text-secondary)' }}>{user.email}</td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <span style={{
-                      display: 'inline-block', padding: '3px 10px', borderRadius: 20, fontSize: 11,
-                      fontWeight: 600, textTransform: 'uppercase',
-                      backgroundColor: user.status === 'active' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                      color: user.status === 'active' ? 'var(--color-success)' : 'var(--color-danger)',
-                    }}>
+                <tr key={user.id} className="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-bg-hover) transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium">{user.username}</td>
+                  <td className="px-4 py-3 text-sm text-(--color-text-secondary)">{user.email}</td>
+                  <td className="px-4 py-3">
+                    <span 
+                      className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase ${
+                        user.status === 'active' 
+                          ? 'bg-green-500/15 text-(--color-success)' 
+                          : 'bg-red-500/15 text-(--color-danger)'
+                      }`}
+                    >
                       {user.status}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-muted)' }}>
+                  <td className="px-4 py-3 text-[13px] text-(--color-text-muted)">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button onClick={() => handleDelete(user.id)} title="Delete" style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'var(--color-text-muted)', padding: 4,
-                    }}>
+                  <td className="px-4 py-3 text-right">
+                    <button 
+                      onClick={() => handleDelete(user.id)} 
+                      title="Delete" 
+                      className="bg-transparent border-none cursor-pointer text-(--color-text-muted) p-1 hover:text-(--color-danger) transition-colors"
+                    >
                       <Trash2 size={15} />
                     </button>
                   </td>
                 </tr>
               ))}
               {users.length === 0 && (
-                <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 14 }}>
-                  No users yet. Create one to get started.
-                </td></tr>
+                <tr>
+                  <td colSpan={5} className="p-10 text-center text-(--color-text-muted) text-sm">
+                    No users yet. Create one to get started.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
