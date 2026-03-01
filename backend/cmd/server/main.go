@@ -52,6 +52,12 @@ func main() {
 	}
 	defer pgPool.Close()
 
+	// Run database migrations
+	if err := database.RunMigrations(ctx, pgPool, "internal/database/migrations"); err != nil {
+		slog.Error("failed to run migrations", "error", err)
+		os.Exit(1)
+	}
+
 	// Connect to Redis
 	redisClient, err := database.NewRedisClient(ctx, cfg.Redis)
 	if err != nil {
@@ -64,10 +70,10 @@ func main() {
 	// Initialize repositories
 	// =========================================================================
 	userRepo := repository.NewUserRepository(pgPool)
-	_ = repository.NewGroupRepository(pgPool)
-	_ = repository.NewRoleRepository(pgPool)
+	groupRepo := repository.NewGroupRepository(pgPool)
+	roleRepo := repository.NewRoleRepository(pgPool)
 	policyRepo := repository.NewPolicyRepository(pgPool)
-	_ = repository.NewAPIKeyRepository(pgPool)
+	apiKeyRepo := repository.NewAPIKeyRepository(pgPool)
 	auditRepo := repository.NewAuditRepository(pgPool)
 
 	// =========================================================================
@@ -75,8 +81,11 @@ func main() {
 	// =========================================================================
 	authService := service.NewAuthService(userRepo, cfg.JWT.Secret, cfg.JWT.AccessTokenTTL)
 	userService := service.NewUserService(userRepo)
+	groupService := service.NewGroupService(groupRepo)
+	roleService := service.NewRoleService(roleRepo)
 	policyService := service.NewPolicyService(policyRepo)
 	simulatorService := service.NewSimulatorService(policyRepo)
+	apiKeyService := service.NewAPIKeyService(apiKeyRepo)
 	auditService := service.NewAuditService(auditRepo)
 
 	// =========================================================================
@@ -84,8 +93,11 @@ func main() {
 	// =========================================================================
 	authHandler := handlers.NewAuthHandler(authService)
 	userHandler := handlers.NewUserHandler(userService)
+	groupHandler := handlers.NewGroupHandler(groupService)
+	roleHandler := handlers.NewRoleHandler(roleService)
 	policyHandler := handlers.NewPolicyHandler(policyService)
 	simulatorHandler := handlers.NewSimulatorHandler(simulatorService)
+	apiKeyHandler := handlers.NewAPIKeyHandler(apiKeyService)
 	auditHandler := handlers.NewAuditHandler(auditService)
 
 	// =========================================================================
@@ -156,6 +168,25 @@ func main() {
 			r.Put("/users/{id}", userHandler.Update)
 			r.Delete("/users/{id}", userHandler.Delete)
 
+			// Groups
+			r.Post("/groups", groupHandler.Create)
+			r.Get("/groups", groupHandler.List)
+			r.Get("/groups/{id}", groupHandler.Get)
+			r.Put("/groups/{id}", groupHandler.Update)
+			r.Delete("/groups/{id}", groupHandler.Delete)
+			r.Post("/groups/{id}/users", groupHandler.AddUser)
+			r.Delete("/groups/{id}/users/{userId}", groupHandler.RemoveUser)
+			r.Get("/groups/{id}/users", groupHandler.ListUsers)
+
+			// Roles
+			r.Post("/roles", roleHandler.Create)
+			r.Get("/roles", roleHandler.List)
+			r.Get("/roles/{id}", roleHandler.Get)
+			r.Put("/roles/{id}", roleHandler.Update)
+			r.Delete("/roles/{id}", roleHandler.Delete)
+			r.Post("/roles/{id}/users", roleHandler.AssignUser)
+			r.Delete("/roles/{id}/users/{userId}", roleHandler.UnassignUser)
+
 			// Policies
 			r.Post("/policies", policyHandler.Create)
 			r.Get("/policies", policyHandler.List)
@@ -167,6 +198,11 @@ func main() {
 
 			// Policy Simulator
 			r.Post("/simulate", simulatorHandler.Simulate)
+
+			// API Keys
+			r.Post("/api-keys", apiKeyHandler.Create)
+			r.Get("/api-keys", apiKeyHandler.List)
+			r.Delete("/api-keys/{id}", apiKeyHandler.Delete)
 
 			// Audit Logs
 			r.Get("/audit-logs", auditHandler.List)
