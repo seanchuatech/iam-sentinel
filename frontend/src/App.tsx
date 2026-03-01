@@ -1,37 +1,64 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { AuthProvider, useAuth } from './lib/auth';
+import DashboardLayout from './components/layout/DashboardLayout';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import UsersPage from './pages/UsersPage';
+import GroupsPage from './pages/GroupsPage';
+import RolesPage from './pages/RolesPage';
+import PoliciesPage from './pages/PoliciesPage';
+import SimulatorPage from './pages/SimulatorPage';
+import ApiKeysPage from './pages/ApiKeysPage';
+import AuditLogPage from './pages/AuditLogPage';
 import './index.css';
 
-// Placeholder pages — will be built in Phase 4
-function LoginPage() {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="p-8 rounded-xl border"
-        style={{
-          backgroundColor: 'var(--color-bg-card)',
-          borderColor: 'var(--color-border)',
-        }}>
-        <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-primary-light)' }}>
-          🛡️ Sentinel
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)' }}>
-          Identity & Access Management
-        </p>
-        <p className="mt-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Phase 1 scaffolding complete — dashboard coming in Phase 4.
-        </p>
+// =============================================================================
+// Protected Route — redirects to login if not authenticated
+// =============================================================================
+function ProtectedRoute() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div style={{ color: 'var(--color-text-muted)' }}>Loading...</div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
+// =============================================================================
+// App — Root component with routing
+// =============================================================================
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* Protected — Dashboard Layout */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/groups" element={<GroupsPage />} />
+              <Route path="/roles" element={<RolesPage />} />
+              <Route path="/policies" element={<PoliciesPage />} />
+              <Route path="/simulator" element={<SimulatorPage />} />
+              <Route path="/api-keys" element={<ApiKeysPage />} />
+              <Route path="/audit-logs" element={<AuditLogPage />} />
+            </Route>
+          </Route>
+
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
