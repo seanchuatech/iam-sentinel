@@ -38,7 +38,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-(--color-bg-primary) to-(--color-bg-tertiary)">
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-(--color-bg-primary) to-(--color-bg-tertiary)">
       <div className="w-[400px] p-8 rounded-2xl bg-(--color-bg-card) border border-(--color-border) shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
         {/* Header */}
         <div className="text-center mb-7">
