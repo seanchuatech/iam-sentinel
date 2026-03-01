@@ -11,16 +11,22 @@ export default function ApiKeysPage() {
   const [creating, setCreating] = useState(false);
   const [newKeySecret, setNewKeySecret] = useState<{ keyId: string; secret: string } | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchKeys = async () => {
-    try {
-      const { data } = await api.get('/api-keys');
-      setKeys(data.api_keys || []);
-    } catch { /* */ }
-    setLoading(false);
-  };
+  const fetchKeys = () => setRefreshKey((k) => k + 1);
 
-  useEffect(() => { fetchKeys(); }, []);
+  useEffect(() => {
+    let active = true;
+    const loadKeys = async () => {
+      try {
+        const { data } = await api.get('/api-keys');
+        if (active) setKeys(data.api_keys || []);
+      } catch { /* */ }
+      if (active) setLoading(false);
+    };
+    loadKeys();
+    return () => { active = false; };
+  }, [refreshKey]);
 
   const handleCreate = async () => {
     setCreating(true);

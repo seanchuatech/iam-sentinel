@@ -14,17 +14,25 @@ export default function UsersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [creating, setCreating] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchUsers = async () => {
-    try {
-      const { data } = await api.get('/users?limit=50');
-      setUsers(data.users || []);
-      setTotal(data.total);
-    } catch { /* handled by interceptor */ }
-    setLoading(false);
-  };
+  const fetchUsers = () => setRefreshKey((k) => k + 1);
 
-  useEffect(() => { fetchUsers(); }, []);
+  useEffect(() => {
+    let active = true;
+    const loadUsers = async () => {
+      try {
+        const { data } = await api.get('/users?limit=50');
+        if (active) {
+          setUsers(data.users || []);
+          setTotal(data.total);
+        }
+      } catch { /* handled by interceptor */ }
+      if (active) setLoading(false);
+    };
+    loadUsers();
+    return () => { active = false; };
+  }, [refreshKey]);
 
   const handleCreate = async () => {
     setCreating(true);

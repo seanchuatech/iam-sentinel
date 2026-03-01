@@ -10,17 +10,25 @@ export default function RolesPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', description: '' });
   const [creating, setCreating] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchRoles = async () => {
-    try {
-      const { data } = await api.get('/roles?limit=50');
-      setRoles(data.roles || []);
-      setTotal(data.total);
-    } catch { /* */ }
-    setLoading(false);
-  };
+  const fetchRoles = () => setRefreshKey((k) => k + 1);
 
-  useEffect(() => { fetchRoles(); }, []);
+  useEffect(() => {
+    let active = true;
+    const loadRoles = async () => {
+      try {
+        const { data } = await api.get('/roles?limit=50');
+        if (active) {
+          setRoles(data.roles || []);
+          setTotal(data.total);
+        }
+      } catch { /* */ }
+      if (active) setLoading(false);
+    };
+    loadRoles();
+    return () => { active = false; };
+  }, [refreshKey]);
 
   const handleCreate = async () => {
     setCreating(true);

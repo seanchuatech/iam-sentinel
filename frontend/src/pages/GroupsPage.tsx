@@ -10,17 +10,25 @@ export default function GroupsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', description: '', path: '/' });
   const [creating, setCreating] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchGroups = async () => {
-    try {
-      const { data } = await api.get('/groups?limit=50');
-      setGroups(data.groups || []);
-      setTotal(data.total);
-    } catch { /* */ }
-    setLoading(false);
-  };
+  const fetchGroups = () => setRefreshKey((k) => k + 1);
 
-  useEffect(() => { fetchGroups(); }, []);
+  useEffect(() => {
+    let active = true;
+    const loadGroups = async () => {
+      try {
+        const { data } = await api.get('/groups?limit=50');
+        if (active) {
+          setGroups(data.groups || []);
+          setTotal(data.total);
+        }
+      } catch { /* */ }
+      if (active) setLoading(false);
+    };
+    loadGroups();
+    return () => { active = false; };
+  }, [refreshKey]);
 
   const handleCreate = async () => {
     setCreating(true);

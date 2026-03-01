@@ -19,17 +19,25 @@ export default function PoliciesPage() {
   const [form, setForm] = useState({ name: '', description: '', document: JSON.stringify(DEFAULT_DOCUMENT, null, 2) });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchPolicies = async () => {
-    try {
-      const { data } = await api.get('/policies?limit=50');
-      setPolicies(data.policies || []);
-      setTotal(data.total);
-    } catch { /* */ }
-    setLoading(false);
-  };
+  const fetchPolicies = () => setRefreshKey((k) => k + 1);
 
-  useEffect(() => { fetchPolicies(); }, []);
+  useEffect(() => {
+    let active = true;
+    const loadPolicies = async () => {
+      try {
+        const { data } = await api.get('/policies?limit=50');
+        if (active) {
+          setPolicies(data.policies || []);
+          setTotal(data.total);
+        }
+      } catch { /* */ }
+      if (active) setLoading(false);
+    };
+    loadPolicies();
+    return () => { active = false; };
+  }, [refreshKey]);
 
   const handleCreate = async () => {
     setCreating(true);

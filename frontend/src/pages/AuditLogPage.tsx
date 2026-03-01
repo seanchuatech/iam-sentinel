@@ -10,24 +10,22 @@ export default function AuditLogPage() {
   const [offset, setOffset] = useState(0);
   const limit = 25;
 
-  const fetchLogs = async (newOffset: number) => {
-    setLoading(true);
-    try {
-      const { data } = await api.get(`/audit-logs?limit=${limit}&offset=${newOffset}`);
-      setLogs(data.audit_logs || []);
-      setTotal(data.total);
-      setOffset(newOffset);
-    } catch { /* */ }
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchLogs(0); }, []);
-
-  const resultColors: Record<string, string> = {
-    ALLOW: 'var(--color-success)',
-    DENY: 'var(--color-danger)',
-    IMPLICIT_DENY: 'var(--color-warning)',
-  };
+  useEffect(() => {
+    let active = true;
+    const loadLogs = async () => {
+      try {
+        const { data } = await api.get(`/audit-logs?limit=${limit}&offset=${offset}`);
+        if (active) {
+          setLogs(data.audit_logs || []);
+          setTotal(data.total);
+        }
+      } catch { /* */ }
+      if (active) setLoading(false);
+    };
+    
+    loadLogs();
+    return () => { active = false; };
+  }, [offset]);
 
   return (
     <div>
@@ -98,7 +96,7 @@ export default function AuditLogPage() {
             <div className="flex justify-center items-center gap-2 mt-4">
               <button 
                 disabled={offset === 0} 
-                onClick={() => fetchLogs(Math.max(0, offset - limit))}
+                onClick={() => { setLoading(true); setOffset(Math.max(0, offset - limit)); }}
                 className="px-4 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-card) text-(--color-text-secondary) text-[13px] transition-all hover:bg-(--color-bg-hover) disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
@@ -108,7 +106,7 @@ export default function AuditLogPage() {
               </span>
               <button 
                 disabled={offset + limit >= total} 
-                onClick={() => fetchLogs(offset + limit)}
+                onClick={() => { setLoading(true); setOffset(offset + limit); }}
                 className="px-4 py-2 rounded-lg border border-(--color-border) bg-(--color-bg-card) text-(--color-text-secondary) text-[13px] transition-all hover:bg-(--color-bg-hover) disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next

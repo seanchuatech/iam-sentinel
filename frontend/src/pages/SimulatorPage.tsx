@@ -35,7 +35,6 @@ export default function SimulatorPage() {
   };
 
   return (
-  return (
     <div>
       <div className="flex items-center gap-2.5 mb-2">
         <FlaskConical size={22} className="text-purple-500" />
