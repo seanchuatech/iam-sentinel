@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../hooks/useAuth';
 import { Shield, Loader2 } from 'lucide-react';
 
 // =============================================================================
