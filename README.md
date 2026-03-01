@@ -184,28 +184,150 @@ All endpoints are prefixed with `/api/v1/`.
 
 ### Prerequisites
 
-- Go 1.22+
-- Node.js 20+
-- Docker & Docker Compose
-- Make
+Make sure you have the following installed:
 
-### Local Development
+| Tool               | Version | Check Command            |
+| ------------------ | ------- | ------------------------ |
+| **Go**             | 1.22+   | `go version`             |
+| **Node.js**        | 20+     | `node --version`         |
+| **npm**            | 10+     | `npm --version`          |
+| **Docker**         | 24+     | `docker --version`       |
+| **Docker Compose** | 2.x     | `docker compose version` |
+| **Make**           | any     | `make --version`         |
+
+### 1. Clone the Repository
 
 ```bash
-# Start infrastructure (PostgreSQL, Redis, DynamoDB Local)
-docker-compose up -d
+git clone https://github.com/seanchuatech/iam-sentinel.git
+cd iam-sentinel
+```
 
-# Run database migrations
-make migrate
+### 2. Set Up Environment Variables
 
-# Start backend (hot reload)
+```bash
+# The backend comes with a .env file for local dev.
+# Review and customize if needed:
+cat backend/.env
+
+# If .env is missing, copy from the example:
+cp backend/.env.example backend/.env
+```
+
+### 3. Start Infrastructure (Docker)
+
+This starts PostgreSQL, Redis, and DynamoDB Local in Docker containers:
+
+```bash
+docker compose up -d
+```
+
+Verify all containers are healthy:
+
+```bash
+docker compose ps
+```
+
+You should see:
+
+```
+sentinel-postgres   running (healthy)
+sentinel-redis      running (healthy)
+sentinel-dynamodb   running
+```
+
+### 4. Install Dependencies
+
+```bash
+# Backend (Go modules)
+cd backend && go mod download && cd ..
+
+# Frontend (npm packages)
+cd frontend && npm install && cd ..
+```
+
+### 5. Start the Backend
+
+```bash
+# Without hot reload
+make dev-backend-basic
+
+# With hot reload (requires 'air' — install via: go install github.com/air-verse/air@latest)
 make dev-backend
+```
 
-# Start frontend (hot reload)
+The API server starts at **http://localhost:8080**. Verify it's running:
+
+```bash
+# Liveness check
+curl http://localhost:8080/healthz
+# → {"status":"ok"}
+
+# Readiness check (verifies DB + Redis connections)
+curl http://localhost:8080/readyz
+# → {"status":"ready"}
+
+# API version
+curl http://localhost:8080/api/v1/
+# → {"service":"sentinel","version":"0.1.0"}
+```
+
+### 6. Start the Frontend
+
+In a separate terminal:
+
+```bash
 make dev-frontend
+```
 
-# Or start everything at once
-make dev
+The dashboard opens at **http://localhost:5173**. API requests are automatically
+proxied to the Go backend.
+
+### Available Make Commands
+
+```bash
+make help              # Show all available commands
+```
+
+| Command                  | Description                            |
+| ------------------------ | -------------------------------------- |
+| `make dev`               | Start infrastructure + backend         |
+| `make dev-backend`       | Start Go backend with hot reload (air) |
+| `make dev-backend-basic` | Start Go backend without hot reload    |
+| `make dev-frontend`      | Start React frontend dev server        |
+| `make docker-up`         | Start Docker containers                |
+| `make docker-down`       | Stop Docker containers                 |
+| `make docker-reset`      | Stop containers + delete all data      |
+| `make test`              | Run all tests                          |
+| `make test-backend`      | Run Go tests with coverage             |
+| `make build`             | Build backend binary + frontend bundle |
+| `make clean`             | Remove build artifacts                 |
+
+### Troubleshooting
+
+**Port already in use:**
+
+```bash
+# Check what's using a port
+lsof -i :8080   # Backend
+lsof -i :5432   # PostgreSQL
+lsof -i :5173   # Frontend
+```
+
+**Database connection refused:**
+
+```bash
+# Make sure Docker containers are running
+docker compose ps
+
+# Restart if needed
+docker compose down && docker compose up -d
+```
+
+**Reset everything (nuclear option):**
+
+```bash
+# Stops all containers, deletes volumes (all data), rebuilds
+make docker-reset && make docker-up
 ```
 
 ### Running Tests

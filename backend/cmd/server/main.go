@@ -17,6 +17,10 @@ import (
 
 	"github.com/seanchuatech/iam-sentinel/backend/internal/config"
 	"github.com/seanchuatech/iam-sentinel/backend/internal/database"
+	"github.com/seanchuatech/iam-sentinel/backend/internal/handlers"
+	"github.com/seanchuatech/iam-sentinel/backend/internal/middleware"
+	"github.com/seanchuatech/iam-sentinel/backend/internal/repository"
+	"github.com/seanchuatech/iam-sentinel/backend/internal/service"
 )
 
 func main() {
@@ -56,7 +60,37 @@ func main() {
 	}
 	defer redisClient.Close()
 
+	// =========================================================================
+	// Initialize repositories
+	// =========================================================================
+	userRepo := repository.NewUserRepository(pgPool)
+	_ = repository.NewGroupRepository(pgPool)
+	_ = repository.NewRoleRepository(pgPool)
+	policyRepo := repository.NewPolicyRepository(pgPool)
+	_ = repository.NewAPIKeyRepository(pgPool)
+	auditRepo := repository.NewAuditRepository(pgPool)
+
+	// =========================================================================
+	// Initialize services
+	// =========================================================================
+	authService := service.NewAuthService(userRepo, cfg.JWT.Secret, cfg.JWT.AccessTokenTTL)
+	userService := service.NewUserService(userRepo)
+	policyService := service.NewPolicyService(policyRepo)
+	simulatorService := service.NewSimulatorService(policyRepo)
+	auditService := service.NewAuditService(auditRepo)
+
+	// =========================================================================
+	// Initialize handlers
+	// =========================================================================
+	authHandler := handlers.NewAuthHandler(authService)
+	userHandler := handlers.NewUserHandler(userService)
+	policyHandler := handlers.NewPolicyHandler(policyService)
+	simulatorHandler := handlers.NewSimulatorHandler(simulatorService)
+	auditHandler := handlers.NewAuditHandler(auditService)
+
+	// =========================================================================
 	// Build router
+	// =========================================================================
 	r := chi.NewRouter()
 
 	// Global middleware
@@ -83,14 +117,12 @@ func main() {
 	r.Get("/readyz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		// Check PostgreSQL
 		if err := pgPool.Ping(r.Context()); err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			fmt.Fprintf(w, `{"status":"not ready","error":"postgres: %s"}`, err.Error())
 			return
 		}
 
-		// Check Redis
 		if err := redisClient.Ping(r.Context()).Err(); err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			fmt.Fprintf(w, `{"status":"not ready","error":"redis: %s"}`, err.Error())
@@ -101,15 +133,49 @@ func main() {
 		fmt.Fprint(w, `{"status":"ready"}`)
 	})
 
-	// API routes (will be mounted here in later phases)
+	// =========================================================================
+	// API routes
+	// =========================================================================
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprint(w, `{"service":"sentinel","version":"0.1.0"}`)
 		})
+
+		// Public auth routes (no JWT required)
+		r.Post("/auth/register", authHandler.Register)
+		r.Post("/auth/login", authHandler.Login)
+
+		// Protected routes (JWT required)
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.JWTAuth(authService))
+
+			// Users
+			r.Get("/users", userHandler.List)
+			r.Get("/users/{id}", userHandler.Get)
+			r.Put("/users/{id}", userHandler.Update)
+			r.Delete("/users/{id}", userHandler.Delete)
+
+			// Policies
+			r.Post("/policies", policyHandler.Create)
+			r.Get("/policies", policyHandler.List)
+			r.Get("/policies/{id}", policyHandler.Get)
+			r.Put("/policies/{id}", policyHandler.Update)
+			r.Delete("/policies/{id}", policyHandler.Delete)
+			r.Post("/policies/{id}/attach", policyHandler.Attach)
+			r.Post("/policies/{id}/detach", policyHandler.Detach)
+
+			// Policy Simulator
+			r.Post("/simulate", simulatorHandler.Simulate)
+
+			// Audit Logs
+			r.Get("/audit-logs", auditHandler.List)
+		})
 	})
 
-	// Configure HTTP server
+	// =========================================================================
+	// Start server
+	// =========================================================================
 	srv := &http.Server{
 		Addr:         cfg.Server.Addr(),
 		Handler:      r,
@@ -118,7 +184,6 @@ func main() {
 		IdleTimeout:  cfg.Server.IdleTimeout,
 	}
 
-	// Start server in a goroutine
 	go func() {
 		slog.Info("starting server", "addr", cfg.Server.Addr())
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -134,7 +199,6 @@ func main() {
 
 	slog.Info("shutting down server...")
 
-	// Give active requests time to finish
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
 	defer shutdownCancel()
 
